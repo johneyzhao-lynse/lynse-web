@@ -75,7 +75,7 @@ export class ApiClient {
 
     if (json && typeof json === "object" && "code" in json && "data" in json) {
       if (json.code !== 200) {
-        throw new ApiError(json.code, json.message || "API error");
+        throw new ApiError(json.code, json.msg || json.message || "API error");
       }
       return json.data as T;
     }

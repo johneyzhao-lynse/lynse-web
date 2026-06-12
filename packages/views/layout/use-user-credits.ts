@@ -19,7 +19,7 @@ export function useUserCredits() {
   return useQuery<CustomerInfo>({
     queryKey: ["user", "credits"],
     queryFn: async () => {
-      const data = await api().get<Record<string, unknown>>("/api/business/customer/detail");
+      const data = await api().get<Record<string, unknown>>("/api/business/customer/current");
       return data as unknown as CustomerInfo;
     },
     enabled: isAuthenticated,

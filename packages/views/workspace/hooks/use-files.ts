@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "@lynse/core/api/client";
 import { useAuthStore } from "@lynse/core/auth";
 import type { FileDetail, FileConclusion, FileOutline, FileTranscription, WorkspaceItem } from "../types";
@@ -117,6 +117,21 @@ export function useFileAudioUrl(fileId: string | null) {
     enabled: !!fileId && isAuthenticated,
     staleTime: 5 * 60 * 1000, // presigned URLs expire, but cache for 5 min
     retry: false, // don't retry — endpoint may not exist
+  });
+}
+
+/** Update a conclusion's text content. */
+export function useUpdateConclusion() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ conclusionId, conclusionText }: { conclusionId: string; conclusionText: string }) =>
+      api().post<unknown>("/api/business/file/conclusion/update", {
+        id: conclusionId,
+        conclusionText,
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["file-conclusions"] });
+    },
   });
 }
 

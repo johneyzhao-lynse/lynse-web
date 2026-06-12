@@ -21,12 +21,19 @@
     --color-ring: var(--ring);
     --color-input: var(--input);
     --color-border: var(--border);
+    --color-stroke-primary: var(--stroke-primary);
+    --color-stroke-secondary: var(--stroke-secondary);
+    --color-stroke-tertiary: var(--stroke-tertiary);
+    --color-stroke-quaternary: var(--stroke-quaternary);
     --color-destructive: var(--destructive);
     --color-success: var(--success);
     --color-warning: var(--warning);
     --color-info: var(--info);
     --color-brand: var(--brand);
     --color-brand-foreground: var(--brand-foreground);
+    --color-accent-brand: var(--accent-brand);
+    --color-accent-brand-strong: var(--accent-brand-strong);
+    --color-accent-brand-text: var(--accent-brand-text);
     --color-accent-foreground: var(--accent-foreground);
     --color-accent: var(--accent);
     --color-muted-foreground: var(--muted-foreground);
@@ -48,6 +55,15 @@
     --radius-2xl: calc(var(--radius) * 1.8);
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
+
+    /* Floating shadow for overlays — multi-layer downward falloff */
+    --shadow-overlay:
+        0 0.125rem 0.25rem -0.125rem color-mix(in srgb, var(--foreground) 6%, transparent),
+        0 0.5rem 0.75rem -0.375rem color-mix(in srgb, var(--foreground) 5%, transparent),
+        0 1.25rem 1.75rem -0.875rem color-mix(in srgb, var(--foreground) 5%, transparent),
+        0 2.25rem 3rem -1.75rem color-mix(in srgb, var(--foreground) 3%, transparent);
+    /* Hairline stroke paired with shadow-overlay — currentColor, theme-adaptive */
+    --stroke-overlay: color-mix(in srgb, currentColor 6%, transparent);
 }
 
 :root {
@@ -69,6 +85,18 @@
     --border: oklch(0.92 0.004 286.32);
     --input: oklch(0.92 0.004 286.32);
     --ring: oklch(0.705 0.015 286.067);
+    /* Stroke hierarchy — descending strength */
+    --stroke-primary: oklch(0.76 0.006 286.32);
+    --stroke-secondary: oklch(0.86 0.005 286.32);
+    --stroke-tertiary: oklch(0.92 0.004 286.32);
+    --stroke-quaternary: oklch(0.96 0.003 286.32);
+    /* Brand seed — change this one value to retheme the entire palette */
+    --brand: oklch(0.55 0.16 255);
+    --brand-foreground: oklch(0.985 0 0);
+    /* Brand-derived accent fills — auto-generated from --brand */
+    --accent-brand: color-mix(in oklch, var(--brand) 10%, var(--background));
+    --accent-brand-strong: color-mix(in oklch, var(--brand) 16%, var(--background));
+    --accent-brand-text: color-mix(in oklch, var(--brand) 85%, var(--foreground));
     /* Brand-derived blue gradient (h=255 = brand hue). chart-1 equals brand
        so the most important series visually anchors to the product colour;
        chart-2..5 step lighter + less saturated so a stacked bar reads
@@ -88,14 +116,20 @@
     --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
     --sidebar-border: oklch(0.92 0.004 286.32);
     --sidebar-ring: oklch(0.705 0.015 286.067);
-    --brand: oklch(0.55 0.16 255);
-    --brand-foreground: oklch(0.985 0 0);
     --success: oklch(0.55 0.16 145);
     --warning: oklch(0.75 0.16 85);
     --info: oklch(0.55 0.18 250);
     --scrollbar-thumb: oklch(0 0 0 / 10%);
     --scrollbar-thumb-hover: oklch(0 0 0 / 18%);
     --scrollbar-track: transparent;
+    --speaker-1: oklch(0.6 0.15 250);
+    --speaker-2: oklch(0.65 0.16 155);
+    --speaker-3: oklch(0.65 0.15 60);
+    --speaker-4: oklch(0.55 0.16 300);
+    --speaker-5: oklch(0.6 0.18 25);
+    --speaker-6: oklch(0.6 0.12 185);
+    --speaker-7: oklch(0.7 0.15 85);
+    --speaker-8: oklch(0.55 0.14 250);
 }
 
 .dark {
@@ -117,6 +151,11 @@
     --border: oklch(1 0 0 / 10%);
     --input: oklch(1 0 0 / 15%);
     --ring: oklch(0.552 0.016 285.938);
+    /* Stroke hierarchy — descending strength (dark mode) */
+    --stroke-primary: oklch(1 0 0 / 20%);
+    --stroke-secondary: oklch(1 0 0 / 14%);
+    --stroke-tertiary: oklch(1 0 0 / 10%);
+    --stroke-quaternary: oklch(1 0 0 / 6%);
     /* Dark mode mirrors light mode's "primary → secondary" gradient on the
        brand hue, but flips the lightness curve: the most important series
        is the brightest (so it pops on the dark background) and trailing
@@ -136,10 +175,21 @@
     --sidebar-ring: oklch(0.552 0.016 285.938);
     --brand: oklch(0.65 0.16 255);
     --brand-foreground: oklch(0.985 0 0);
+    --accent-brand: color-mix(in oklch, var(--brand) 14%, var(--background));
+    --accent-brand-strong: color-mix(in oklch, var(--brand) 20%, var(--background));
+    --accent-brand-text: color-mix(in oklch, var(--brand) 90%, var(--foreground));
     --success: oklch(0.65 0.15 145);
     --warning: oklch(0.70 0.16 85);
     --info: oklch(0.65 0.18 250);
     --scrollbar-thumb: oklch(1 0 0 / 8%);
     --scrollbar-thumb-hover: oklch(1 0 0 / 18%);
     --scrollbar-track: transparent;
+    --speaker-1: oklch(0.7 0.13 250);
+    --speaker-2: oklch(0.72 0.14 155);
+    --speaker-3: oklch(0.72 0.13 60);
+    --speaker-4: oklch(0.65 0.14 300);
+    --speaker-5: oklch(0.7 0.15 25);
+    --speaker-6: oklch(0.7 0.1 185);
+    --speaker-7: oklch(0.75 0.13 85);
+    --speaker-8: oklch(0.65 0.12 250);
 }

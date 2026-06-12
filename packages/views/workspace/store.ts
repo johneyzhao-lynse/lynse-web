@@ -4,6 +4,7 @@ import type { ChatMessage, EditorMode, ItemType } from "./types";
 const CHAT_PANEL_WIDTH_KEY = "lynse_chat_panel_width";
 const FILE_LIST_WIDTH_KEY = "lynse_file_list_width";
 const FOLDER_TREE_WIDTH_KEY = "lynse_folder_tree_width";
+const NOTE_TABS_KEY = "lynse_note_tabs";
 
 const DEFAULT_CHAT_PANEL_WIDTH = 340;
 const DEFAULT_FILE_LIST_WIDTH = 240;
@@ -26,6 +27,24 @@ function saveNumber(key: string, value: number): void {
   if (typeof window !== "undefined") localStorage.setItem(key, String(value));
 }
 
+export interface NoteTab {
+  id: string;
+  title: string;
+}
+
+function loadNoteTabs(): NoteTab[] {
+  if (typeof window === "undefined") return [];
+  const raw = localStorage.getItem(NOTE_TABS_KEY);
+  if (!raw) return [];
+  try { return JSON.parse(raw); } catch { return []; }
+}
+
+function saveNoteTabs(tabs: NoteTab[]) {
+  if (typeof window !== "undefined") localStorage.setItem(NOTE_TABS_KEY, JSON.stringify(tabs));
+}
+
+type ContentTab = "outline" | "transcription" | `summary-${number}` | `note-${string}`;
+
 interface WorkspaceState {
   selectedItemId: string | null;
   selectedItemType: ItemType | null;
@@ -38,8 +57,9 @@ interface WorkspaceState {
   chatPanelWidth: number;
   fileListWidth: number;
   folderTreeWidth: number;
-  contentTab: "outline" | "summary" | "transcription";
+  contentTab: ContentTab;
   outlineSidebarVisible: boolean;
+  noteTabs: NoteTab[];
 
   // Sidebar directory state
   sidebarSectionsCollapsed: Set<string>;
@@ -55,12 +75,14 @@ interface WorkspaceState {
   addChatMessage: (message: ChatMessage) => void;
   clearChat: () => void;
   toggleChatPanel: () => void;
-  setContentTab: (tab: "outline" | "summary" | "transcription") => void;
+  setContentTab: (tab: ContentTab) => void;
   toggleOutlineSidebar: () => void;
   setChatPanelWidth: (width: number) => void;
   handleChatPanelResize: (delta: number) => void;
   handleFileListResize: (delta: number) => void;
   handleFolderTreeResize: (delta: number) => void;
+  addNoteTab: () => void;
+  removeNoteTab: (id: string) => void;
 
   // Sidebar directory actions
   toggleSidebarSection: (section: string) => void;
@@ -83,6 +105,7 @@ function createWorkspaceStore() {
     chatPanelVisible: false,
     contentTab: "outline",
     outlineSidebarVisible: false,
+    noteTabs: loadNoteTabs(),
     chatPanelWidth: loadNumber(CHAT_PANEL_WIDTH_KEY, DEFAULT_CHAT_PANEL_WIDTH),
     fileListWidth: loadNumber(FILE_LIST_WIDTH_KEY, DEFAULT_FILE_LIST_WIDTH),
     folderTreeWidth: loadNumber(FOLDER_TREE_WIDTH_KEY, DEFAULT_FOLDER_TREE_WIDTH),
@@ -123,6 +146,24 @@ function createWorkspaceStore() {
 
     toggleOutlineSidebar: () =>
       set((state) => ({ outlineSidebarVisible: !state.outlineSidebarVisible })),
+
+    addNoteTab: () => {
+      const id = Date.now().toString(36);
+      const tabs = [...get().noteTabs, { id, title: `笔记 ${get().noteTabs.length + 1}` }];
+      saveNoteTabs(tabs);
+      set({ noteTabs: tabs, contentTab: `note-${id}` as ContentTab });
+    },
+
+    removeNoteTab: (id) => {
+      const tabs = get().noteTabs.filter((t) => t.id !== id);
+      saveNoteTabs(tabs);
+      const current = get().contentTab;
+      const updates: Partial<WorkspaceState> = { noteTabs: tabs };
+      if (current === `note-${id}`) {
+        updates.contentTab = tabs.length > 0 ? (`note-${tabs[0]!.id}` as ContentTab) : "outline";
+      }
+      set(updates);
+    },
 
     setChatPanelWidth: (width) => {
       const clamped = Math.max(MIN_CHAT_PANEL_WIDTH, Math.min(MAX_CHAT_PANEL_WIDTH, width));

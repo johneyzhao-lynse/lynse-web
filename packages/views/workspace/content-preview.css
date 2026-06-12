@@ -32,6 +32,22 @@
   word-break: break-word;
 }
 
+/* === Summary editor (editable ProseMirror) === */
+
+.summary-editor .ProseMirror {
+  outline: none;
+  min-height: 60px;
+  padding: 4px 0;
+}
+
+.summary-editor .ProseMirror:focus {
+  outline: none;
+}
+
+.summary-editor .ProseMirror > * + * {
+  margin-top: 0.75em;
+}
+
 .content-preview-inner > *:first-child {
   margin-top: 0 !important;
 }
