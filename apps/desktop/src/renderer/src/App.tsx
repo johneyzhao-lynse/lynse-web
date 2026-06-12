@@ -6,7 +6,6 @@ import { DashboardLayout } from "@lynse/views/layout";
 import { useNavigation } from "@lynse/views/navigation";
 import { WorkspaceLayout } from "@lynse/views/workspace";
 import { ChatPage } from "@lynse/views/chat";
-import { SettingsPage } from "@lynse/views/settings";
 import { RESOURCES } from "@lynse/views/locales";
 import { DesktopNavigationProvider } from "./platform/navigation";
 
@@ -20,7 +19,6 @@ function PageRouter() {
   const { pathname } = useNavigation();
 
   if (pathname.startsWith("/chat")) return <ChatPage />;
-  if (pathname.startsWith("/settings")) return <SettingsPage />;
 
   // All workspace routes share the same three-panel layout
   return <WorkspaceLayout />;

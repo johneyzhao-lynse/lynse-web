@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { cn } from "@lynse/ui/lib/utils";
 import { AppLink, useNavigation } from "../navigation";
 import {
@@ -50,6 +50,7 @@ import { useTheme } from "@lynse/ui/components/common/theme-provider";
 import { useTranslation, changeLanguage } from "@lynse/core/i18n/react";
 import { useUserCredits } from "./use-user-credits";
 import { FolderTreeSection } from "../workspace/sidebar/folder-tree-section";
+import { SettingsDialog } from "../settings/settings-dialog";
 
 function isNavActive(pathname: string, href: string): boolean {
   return pathname === href || pathname.startsWith(href + "/");
@@ -63,8 +64,9 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ topSlot, headerClassName, headerStyle }: AppSidebarProps = {}) {
-  const { pathname, push } = useNavigation();
+  const { pathname } = useNavigation();
   const { t } = useTranslation();
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const workspaceNav = [
     { key: "recordings", label: t("nav.recordings"), icon: Headphones, path: "/recordings" },
@@ -166,9 +168,12 @@ export function AppSidebar({ topSlot, headerClassName, headerStyle }: AppSidebar
         <UserCredits />
 
         {/* User profile dropdown */}
-        <UserProfileDropdown push={push} />
+        <UserProfileDropdown onOpenSettings={() => setSettingsOpen(true)} />
       </SidebarFooter>
       <SidebarRail />
+
+      {/* Settings dialog */}
+      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
     </Sidebar>
   );
 }
@@ -238,7 +243,7 @@ function UserCredits() {
 }
 
 /* ── User profile dropdown ─────────────────────────────── */
-function UserProfileDropdown({ push }: { push: (path: string) => void }) {
+function UserProfileDropdown({ onOpenSettings }: { onOpenSettings: () => void }) {
   const { t } = useTranslation();
   const { data } = useUserCredits();
 
@@ -263,7 +268,7 @@ function UserProfileDropdown({ push }: { push: (path: string) => void }) {
         }
       />
       <DropdownMenuContent align="start" side="top" sideOffset={4} className="w-52">
-        <DropdownMenuItem onClick={() => push("/settings")}>
+        <DropdownMenuItem onClick={() => onOpenSettings()}>
           <Settings className="size-3.5" />
           <span>{t("nav.settings")}</span>
         </DropdownMenuItem>
